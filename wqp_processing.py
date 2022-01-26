@@ -158,15 +158,20 @@ def copy_original_data(og_data, region, elements):
     return og_data
 
 
-def aggregate_data_by_element(datalist, element):
-    df_agg = pd.concat[datalist[1, :]]
-    df_agg.to_csv('if you make it this far omg')
+def aggregate_data_by_element(datalist, element, date):
+    df_agg = pd.concat(datalist, sort=False)
+    out_folder = r'\\agustin\homes\mfichera\My Documents\_phd\data\water\WQP_01142022\04_combinedbyelements'
+    out_p = 'wqp_aggregate_{}_{}.csv'.format(element, date)
+    df_agg.to_csv(os.path.join(out_folder, out_p))
+    # df_agg.to_csv('if you make it this far omg')
 
 
-def aggregate_data_all(datalist):
+def aggregate_data_all(datalist, date):
     print(datalist)
-    df_agg = pd.concat([datalist])
-    df_agg.to_csv('once again if you made it this far congrats, now fix this')
+    df_agg = pd.concat(datalist, sort=False)
+    out_folder = r'\\agustin\homes\mfichera\My Documents\_phd\data\water\WQP_01142022\05_allcombined'
+    out_p = 'allWQPdata_{}.csv'.format(date)
+    df_agg.to_csv(os.path.join(out_folder, out_p))
 
 
 def main():
@@ -230,30 +235,37 @@ def main():
             df_data, out_folder, out_elements_file, out_element_name = get_piper_elements(df_p, region, date)
             create_feature_class_GIS(out_folder, out_elements_file, region, out_element_name, date)
             piper_aggregate.append(df_data)
-        if element == 'B_F_Cl_TDS' or element == 'ALL':
-            print('elements = {} ===== either B_F_Cl_TDS or ALL, getting B_F_Cl_TDS data'.format(element))
-            df_data, out_folder, out_elements_file, out_element_name = get_BFClTDS(df_p, region, date)
-            create_feature_class_GIS(out_folder, out_elements_file, region, out_element_name, date)
-            BFClTDS_aggregate.append(df_data)
-        if element == 'Cl_Br' or element == 'ALL':
-            print('elements = {} ===== either ClBr or ALL, getting ClBr data'.format(element))
-            df_data, out_folder, out_elements_file, out_element_name = get_ClBr(df_p, region, date)
-            create_feature_class_GIS(out_folder, out_elements_file, region, out_element_name, date)
-            ClBr_aggregate.append(df_data)
-        if element == 'isotopes' or element == 'ALL':
-            print('elements = {} ===== either isotopes or ALL, getting isotopes data'.format(element))
-            df_data, out_folder, out_elements_file, out_element_name = get_isotopes(df_p, region, date)
-            create_feature_class_GIS(out_folder, out_elements_file, region, out_element_name, date)
-            isotopes_aggregate.append(df_data)
-            break
+            if element == 'B_F_Cl_TDS' or element == 'ALL':
+                print('elements = {} ===== either B_F_Cl_TDS or ALL, getting B_F_Cl_TDS data'.format(element))
+                df_data, out_folder, out_elements_file, out_element_name = get_BFClTDS(df_p, region, date)
+                create_feature_class_GIS(out_folder, out_elements_file, region, out_element_name, date)
+                BFClTDS_aggregate.append(df_data)
+                if element == 'Cl_Br' or element == 'ALL':
+                    print('elements = {} ===== either ClBr or ALL, getting ClBr data'.format(element))
+                    df_data, out_folder, out_elements_file, out_element_name = get_ClBr(df_p, region, date)
+                    create_feature_class_GIS(out_folder, out_elements_file, region, out_element_name, date)
+                    ClBr_aggregate.append(df_data)
+                    if element == 'isotopes' or element == 'ALL':
+                        print('elements = {} ===== either isotopes or ALL, getting isotopes data'.format(element))
+                        df_data, out_folder, out_elements_file, out_element_name = get_isotopes(df_p, region, date)
+                        create_feature_class_GIS(out_folder, out_elements_file, region, out_element_name, date)
+                        isotopes_aggregate.append(df_data)
     else:
         print('FILE NOT READ OR DOES NOT HAVE ELEMENTS')
 
     dl = [piper_aggregate, BFClTDS_aggregate, ClBr_aggregate, isotopes_aggregate]
     els = ['piper', 'bfcltds', 'clbr', 'isotopes']
-    aggregate_data_all(all_aggregate)
+
+    print('PROCESS == AGGREGATING ALL DATA')
+    aggregate_data_all(all_aggregate, date)
+    print('aggregating data done')
     for item, el in zip(dl, els):
-        aggregate_data_by_element(item, el)
+        print('PROCESS == AGGREGATING BY ELEMENT --- ELEMENT = {}'.format(el))
+        print('ITEM = {}'.format(item))
+        aggregate_data_by_element(item, el, date)
+
+
+    print('give jake a giant kiss on the mouth')
 
 
 
