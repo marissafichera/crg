@@ -265,7 +265,6 @@ def main():
         aggregate_data_by_element(item, el, date)
 
 
-    print('give jake a giant kiss on the mouth')
 
 
 
